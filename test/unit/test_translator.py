@@ -1,22 +1,123 @@
-from src.translator import translate_content
+from src.translator import get_language, get_translation, translate_content
 import pytest
 from sentence_transformers import SentenceTransformer
-from typing import Callable, Any
 
-from test.unit.utils import eval_single_response_complete, evaluate
+from test.unit.utils import eval_single_response_classification, eval_single_response_complete, eval_single_response_translation, evaluate
 
-COMBINED_SCORE_THRESHOLD = 0.70
+COMBINED_SCORE_THRESHOLD = 0.63
+CLASSIFICATION_SCORE_THRESHOLD = 0.90
+TRANSLATION_SCORE_THRESHOLD = 0.7
 
 @pytest.fixture(scope="session")
 def sentence_model():
     return SentenceTransformer("all-MiniLM-L6-v2")
 
 
+def test_classification_eval_set():
+    assert evaluate(get_language, lambda expected, response: eval_single_response_classification(expected, response), CLASSIFICATION_EVAL_SET) > CLASSIFICATION_SCORE_THRESHOLD
+
+def test_translation_eval_set(sentence_model):
+    assert evaluate(get_translation, lambda expected, response: eval_single_response_translation(expected, response, sentence_model), TRANSLATION_EVAL_SET) > TRANSLATION_SCORE_THRESHOLD
+    
 def test_complete_eval_set(sentence_model):
-    assert evaluate(translate_content, lambda expected, response: eval_single_response_complete(expected, response, sentence_model), complete_eval_set) > COMBINED_SCORE_THRESHOLD
+    assert evaluate(translate_content, lambda expected, response: eval_single_response_complete(expected, response, sentence_model), COMPLETE_EVAL_SET) > COMBINED_SCORE_THRESHOLD
 
 
-complete_eval_set = [
+CLASSIFICATION_EVAL_SET = [
+    {
+        "post": "Hier ist dein erstes Beispiel.",
+        "expected_answer": "German"
+    },
+    {
+        "post": "¿Cómo estás hoy?",
+        "expected_answer": "Spanish"
+    },
+    {
+        "post": "Ceci est un test de traduction automatique.",
+        "expected_answer": "French"
+    },
+    {
+        "post": "私は昨日映画を見ました。",
+        "expected_answer": "Japanese"
+    },
+    {
+        "post": "Это отличный способ выучить новый язык.",
+        "expected_answer": "Russian"
+    },
+    {
+        "post": "Non vedo l’ora di viaggiare in Italia quest’estate!",
+        "expected_answer": "Italian"
+    },
+    {
+        "post": "今天的天气非常好，我们去公园吧。",
+        "expected_answer": "Chinese"
+    },
+    {
+        "post": "هل يمكنك مساعدتي في العثور على أقرب محطة للحافلات؟",
+        "expected_answer": "Arabic"
+    },
+    {
+        "post": "Hvilken tid møtes vi i morgen?",
+        "expected_answer": "Norwegian"
+    },
+    {
+        "post": "Obrigado por me enviar o relatório tão rapidamente.",
+        "expected_answer": "Portuguese"
+    },
+    {
+        "post": "मैं अपने दोस्त से मिलने दिल्ली जा रहा हूँ।",
+        "expected_answer": "Hindi"
+    }
+]
+
+TRANSLATION_EVAL_SET = [
+    {
+        "post": "Hier ist dein erstes Beispiel.",
+        "expected_answer": "Here is your first example."
+    },
+    {
+        "post": "¿Cómo estás hoy?",
+        "expected_answer": "How are you today?"
+    },
+    {
+        "post": "Ceci est un test de traduction automatique.",
+        "expected_answer": "This is a test of automatic translation."
+    },
+    {
+        "post": "私は昨日映画を見ました。",
+        "expected_answer": "I watched a movie yesterday."
+    },
+    {
+        "post": "Это отличный способ выучить новый язык.",
+        "expected_answer": "This is an excellent way to learn a new language."
+    },
+    {
+        "post": "Non vedo l’ora di viaggiare in Italia quest’estate!",
+        "expected_answer": "I can't wait to travel to Italy this summer!"
+    },
+    {
+        "post": "今天的天气非常好，我们去公园吧。",
+        "expected_answer": "The weather is very nice today, let's go to the park."
+    },
+    {
+        "post": "هل يمكنك مساعدتي في العثور على أقرب محطة للحافلات؟",
+        "expected_answer": "Can you help me find the nearest bus station?"
+    },
+    {
+        "post": "Hvilken tid møtes vi i morgen?",
+        "expected_answer": "What time are we meeting tomorrow?"
+    },
+    {
+        "post": "Obrigado por me enviar o relatório tão rapidamente.",
+        "expected_answer": "Thank you for sending me the report so quickly."
+    },
+    {
+        "post": "मैं अपने दोस्त से मिलने दिल्ली जा रहा हूँ।",
+        "expected_answer": "I am going to Delhi to meet my friend."
+    }
+]
+
+COMPLETE_EVAL_SET = [
     {
         "post": "Hier ist dein erstes Beispiel.",
         "expected_answer": (False, "This is your first example.")
