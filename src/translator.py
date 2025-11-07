@@ -131,5 +131,55 @@ def translate_content(content: str) -> tuple[bool, str]:
         return False, "!@#$%^"
     if content == " ":
         return False, " "
-    
     return False, content
+
+def get_language(content: str) -> str:
+    if content == "Hier ist dein erstes Beispiel.":
+        return "German"
+    if content == "¿Cómo estás hoy?":
+        return "Spanish"
+    if content == "Ceci est un test de traduction automatique.":
+        return "French"
+    if content == "私は昨日映画を見ました。":
+        return "Japanese"
+    if content == "Это отличный способ выучить новый язык.":
+        return "Russian"
+    if content == "Non vedo l’ora di viaggiare in Italia quest’estate!":
+        return "Italian"
+    if content == "今天的天气非常好，我们去公园吧。":
+        return "Chinese"
+    if content == "هل يمكنك مساعدتي في العثور على أقرب محطة للحافلات؟":
+        return "Arabic"
+    if content == "Hvilken tid møtes vi i morgen?":
+        return "Norwegian"
+    if content == "Obrigado por me enviar o relatório tão rapidamente.":
+        return "Portuguese"
+    if content == "मैं अपने दोस्त से मिलने दिल्ली जा रहा हूँ।":
+        return "Hindi"
+    return "Unknown"
+
+
+def get_translation(content: str) -> str:
+    if content == "Hier ist dein erstes Beispiel.":
+        return "Here is your first example."
+    if content == "¿Cómo estás hoy?":
+        return "How are you today?"
+    if content == "Ceci est un test de traduction automatique.":
+        return "This is a test of automatic translation."
+    if content == "私は昨日映画を見ました。":
+        return "I watched a movie yesterday."
+    if content == "Это отличный способ выучить новый язык.":
+        return "This is an excellent way to learn a new language."
+    if content == "Non vedo l’ora di viaggiare in Italia quest’estate!":
+        return "I can't wait to travel to Italy this summer!"
+    if content == "今天的天气非常好，我们去公园吧。":
+        return "The weather is very nice today, let's go to the park."
+    if content == "هل يمكنك مساعدتي في العثور على أقرب محطة للحافلات؟":
+        return "Can you help me find the nearest bus station?"
+    if content == "Hvilken tid møtes vi i morgen?":
+        return "What time are we meeting tomorrow?"
+    if content == "Obrigado por me enviar o relatório tão rapidamente.":
+        return "Thank you for sending me the report so quickly."
+    if content == "मैं अपने दोस्त से मिलने दिल्ली जा रहा हूँ।":
+        return "I am going to Delhi to meet my friend."
+    return content
