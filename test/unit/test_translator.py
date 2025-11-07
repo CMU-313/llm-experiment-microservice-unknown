@@ -1,47 +1,66 @@
 from src.translator import translate_content
 import pytest
 from sentence_transformers import SentenceTransformer
+from typing import Callable, Any
 
-SIMILARITY_THRESHOLD = 0.70
+from test.unit.utils import eval_single_response_complete, evaluate
+
+COMBINED_SCORE_THRESHOLD = 0.70
 
 @pytest.fixture(scope="session")
 def sentence_model():
     return SentenceTransformer("all-MiniLM-L6-v2")
 
 
-def test_chinese():
-    is_english, translated_content = translate_content("这是一条中文消息")
-    assert is_english == False
-    assert translated_content == "This is a Chinese message"
+def test_complete_eval_set(sentence_model):
+    assert evaluate(translate_content, lambda expected, response: eval_single_response_complete(expected, response, sentence_model), complete_eval_set) > COMBINED_SCORE_THRESHOLD
 
 
-def test_llm_english_response(sentence_model):
-    _check_test_case_list(english_to_english_examples, sentence_model)
-
-def test_llm_non_english_response(sentence_model):
-    _check_test_case_list(non_english_to_english_examples, sentence_model)
-
-def test_llm_gibberish_response(sentence_model):
-    _check_test_case_list(gibberish_examples, sentence_model)
-
-
-def _check_test_case_list(test_cases, sentence_model):
-    for test in test_cases:
-        post = test["post"]
-        expected_answer = test["expected_answer"]
-        is_english, translated_content = translate_content(post)
-        assert is_english == expected_answer[0], f"Expected {expected_answer[0]} for input '{post}', but got {is_english}"
-        assert _eval_single_response_translation(expected_answer[1], translated_content, sentence_model) > 0.8, f"Expected '{expected_answer[1]}' for input '{post}', but got {translated_content}"
-
-
-def _eval_single_response_translation(expected_answer: str, llm_response: str, model: SentenceTransformer) -> float:
-  '''Compares an LLM response to the expected answer from the evaluation dataset using one of the text comparison metrics.'''
-  sentences=[expected_answer, llm_response]
-  embeddings = model.encode(sentences)
-  return float(model.similarity(embeddings[0],embeddings[1])[0][0])
-
-
-english_to_english_examples = [
+complete_eval_set = [
+    {
+        "post": "Hier ist dein erstes Beispiel.",
+        "expected_answer": (False, "This is your first example.")
+    },
+    {
+        "post": "¿Cómo estás hoy?",
+        "expected_answer": (False, "How are you today?")
+    },
+    {
+        "post": "Ceci est un test de traduction automatique.",
+        "expected_answer": (False,"This is a test of automatic translation.")
+    },
+    {
+        "post": "私は昨日映画を見ました。",
+        "expected_answer": (False,"I watched a movie yesterday.")
+    },
+    {
+        "post": "Это отличный способ выучить новый язык.",
+        "expected_answer": (False,"This is an excellent way to learn a new language.")
+    },
+    {
+        "post": "Non vedo l’ora di viaggiare in Italia quest’estate!",
+        "expected_answer": (False,"I can't wait to travel to Italy this summer!")
+    },
+    {
+        "post": "今天的天气非常好，我们去公园吧。",
+        "expected_answer": (False,"The weather is very nice today, let's go to the park.")
+    },
+    {
+        "post": "هل يمكنك مساعدتي في العثور على أقرب محطة للحافلات؟",
+        "expected_answer": (False,"Can you help me find the nearest bus station?")
+    },
+    {
+        "post": "Hvilken tid møtes vi i morgen?",
+        "expected_answer": (False,"What time are we meeting tomorrow?")
+    },
+    {
+        "post": "Obrigado por me enviar o relatório tão rapidamente.",
+        "expected_answer": (False,"Thank you for sending me the report so quickly.")
+    },
+    {
+        "post": "मैं अपने दोस्त से मिलने दिल्ली जा रहा हूँ।",
+        "expected_answer": (False,"I am going to Delhi to meet my friend.")
+    },
     {
         "post": "I will talk to you later after the conference call.",
         "expected_answer": (True, "I will talk to you later after the conference call.")
@@ -113,53 +132,6 @@ english_to_english_examples = [
     {
         "post": "What time is it?",
         "expected_answer": (True, "What time is it?")
-    }
-]
-
-non_english_to_english_examples = [
-    {
-        "post": "Hier ist dein erstes Beispiel.",
-        "expected_answer": (False, "This is your first example.")
-    },
-    {
-        "post": "¿Cómo estás hoy?",
-        "expected_answer": (False, "How are you today?")
-    },
-    {
-        "post": "Ceci est un test de traduction automatique.",
-        "expected_answer": (False,"This is a test of automatic translation.")
-    },
-    {
-        "post": "私は昨日映画を見ました。",
-        "expected_answer": (False,"I watched a movie yesterday.")
-    },
-    {
-        "post": "Это отличный способ выучить новый язык.",
-        "expected_answer": (False,"This is an excellent way to learn a new language.")
-    },
-    {
-        "post": "Non vedo l’ora di viaggiare in Italia quest’estate!",
-        "expected_answer": (False,"I can't wait to travel to Italy this summer!")
-    },
-    {
-        "post": "今天的天气非常好，我们去公园吧。",
-        "expected_answer": (False,"The weather is very nice today, let's go to the park.")
-    },
-    {
-        "post": "هل يمكنك مساعدتي في العثور على أقرب محطة للحافلات؟",
-        "expected_answer": (False,"Can you help me find the nearest bus station?")
-    },
-    {
-        "post": "Hvilken tid møtes vi i morgen?",
-        "expected_answer": (False,"What time are we meeting tomorrow?")
-    },
-    {
-        "post": "Obrigado por me enviar o relatório tão rapidamente.",
-        "expected_answer": (False,"Thank you for sending me the report so quickly.")
-    },
-    {
-        "post": "मैं अपने दोस्त से मिलने दिल्ली जा रहा हूँ।",
-        "expected_answer": (False,"I am going to Delhi to meet my friend.")
     },
     {
         "post": "Estoy aprendiendo español.",
@@ -226,26 +198,36 @@ non_english_to_english_examples = [
         "expected_answer": (False, "Hello")
     },
     {
-        "post": "こんにちは世界",
-        "expected_answer": (False, "Hello world")
-    }
-]
-
-gibberish_examples = [
-    {
         "post": "asdfghjkl",
-        "expected_answer": (False, "asdfghjkl") # Unintelligible input will likely not be translated meaningfully
+        "expected_answer": (False, "asdfghjkl") #Unintelligible input
     },
     {
+        "post": "ϗψξζηθωϻϱϵϕϑλκμπσςδl",
+        "expected_answer": (False, "ϗψξζηθωϻϱϵϕϑλκμπσςδ") #Random Greek Letters
+    },
+
+    {
         "post": "12345",
-        "expected_answer": (False, "12345") # Numbers likely won't be translated
+        "expected_answer": (False, "12345") #Numbers
     },
     {
         "post": "!@#$%^",
-        "expected_answer": (False, "!@#$%^") # Symbols won't be translated
+        "expected_answer": (False, "!@#$%^") #Symbols
     },
     {
         "post": " ",
-        "expected_answer": (False, " ") # Empty or whitespace-only strings won't be translated
+        "expected_answer": (False, " ") #Whitespace
+    },
+    {
+        "post": "",
+        "expected_answer": (False, "") #Empty String
+    },
+    {
+        "post": "\n",
+        "expected_answer": (False, "\n") #Newline
+    },
+    {
+        "post": "こんにちは世界",
+        "expected_answer": (False, "Hello world")
     }
 ]
