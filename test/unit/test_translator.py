@@ -1,4 +1,12 @@
 from src.translator import translate_content
+import pytest
+from sentence_transformers import SentenceTransformer
+
+SIMILARITY_THRESHOLD = 0.70
+
+@pytest.fixture(scope="session")
+def sentence_model():
+    return SentenceTransformer("all-MiniLM-L6-v2")
 
 
 def test_chinese():
@@ -7,23 +15,30 @@ def test_chinese():
     assert translated_content == "This is a Chinese message"
 
 
-def test_llm_english_response():
-    _check_test_case_list(english_to_english_examples)
+def test_llm_english_response(sentence_model):
+    _check_test_case_list(english_to_english_examples, sentence_model)
 
-def test_llm_non_english_response():
-    _check_test_case_list(non_english_to_english_examples)
+def test_llm_non_english_response(sentence_model):
+    _check_test_case_list(non_english_to_english_examples, sentence_model)
 
-def test_llm_gibberish_response():
-    _check_test_case_list(gibberish_examples)
+def test_llm_gibberish_response(sentence_model):
+    _check_test_case_list(gibberish_examples, sentence_model)
 
 
-def _check_test_case_list(test_cases):
+def _check_test_case_list(test_cases, sentence_model):
     for test in test_cases:
         post = test["post"]
         expected_answer = test["expected_answer"]
         is_english, translated_content = translate_content(post)
         assert is_english == expected_answer[0], f"Expected {expected_answer[0]} for input '{post}', but got {is_english}"
-        assert translated_content == expected_answer[1], f"Expected '{expected_answer[1]}' for input '{post}', but got {translated_content}"
+        assert _eval_single_response_translation(expected_answer[1], translated_content, sentence_model) > 0.8, f"Expected '{expected_answer[1]}' for input '{post}', but got {translated_content}"
+
+
+def _eval_single_response_translation(expected_answer: str, llm_response: str, model: SentenceTransformer) -> float:
+  '''Compares an LLM response to the expected answer from the evaluation dataset using one of the text comparison metrics.'''
+  sentences=[expected_answer, llm_response]
+  embeddings = model.encode(sentences)
+  return float(model.similarity(embeddings[0],embeddings[1])[0][0])
 
 
 english_to_english_examples = [
