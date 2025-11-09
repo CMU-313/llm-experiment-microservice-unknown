@@ -1,8 +1,21 @@
 version: '1.0'
 
 services:
+  ollama:
+    image: ollama/ollama:latest
+    environment:
+      - OLLAMA_HOST=localhost:11434
+    volumes:
+      - ollama_models:/root/.ollama
+    ports:
+      - "11434:11434"
   translator:
     user: "0"
     build: .
     ports:
       - 5000:5000
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
