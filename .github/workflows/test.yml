@@ -25,21 +25,6 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
-    services:
-      ollama:
-        image: ollama/ollama:latest
-        ports:
-          - 11434:11434
-        options: >-
-          --health-cmd="curl -fsS http://localhost:11434/api/version || exit 1"
-          --health-interval=5s
-          --health-timeout=2s
-          --health-retries=60
-
-    env:
-      OLLAMA_HOST: http://localhost:11434
-      TEST_MODEL: gemma3:1b
-
     steps:
       - uses: actions/checkout@v5
 
@@ -51,16 +36,13 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Verify Ollama is up
-        run: curl -fsS http://localhost:11434/api/version
-
-      - name: Pull model for tests
+      - name: Install ollama
+        run: curl -fsSL https://ollama.com/install.sh | sh
+      
+      - name: Run ollama
         run: |
-          curl -fsS -X POST "$OLLAMA_HOST/api/pull" -d "{\"name\":\"$TEST_MODEL\"}"
-          for i in {1..60}; do
-            curl -fsS "$OLLAMA_HOST/api/tags" | grep -q "$TEST_MODEL" && break
-            sleep 2
-          done
+          ollama serve &
+          ollama pull gemma3:1b
 
       - name: Run tests
         run: uv run pytest
