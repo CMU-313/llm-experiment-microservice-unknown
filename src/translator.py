@@ -7,29 +7,20 @@ OLLAMA_URL = "http://128.2.220.229:11434"
 client = Client(host=OLLAMA_URL)
 
 TRANSLATION_CONTEXT = """\
-    You are a language translator.  Translate the ENTIRE input from user into english and return ONLY that
+    You are a professional translator to English.
 
-    The following are examples of expected input and output. Do not return the examples.
-
-    Examples:
-    INPUT:Bonjour, je m'appelle Bob
-    OUTPUT:Hello, my name is Bob.
-
-    INPUT:Können Sie mir bitte helfen?
-    OUTPUT:Can you please help me?
+    Return ONLY the English translation of the user text.
+    Preserve punctuation, line breaks, numbers, names, emojis.
+    Copy URLs, code, @handles, #hashtags verbatim.
+    Do not explain or add examples. Output the translation text only.
     """
 
 CLASSIFICATION_CONTEXT = """\
-    You are a language classifier. Detect the language of the given text in user's content and reply with one word ONLY the English name of that language.
+    You are a language identifier.
 
-    The following are examples of expected input and output. Do not return the examples.
-
-    Example:
-    INPUT:Bonjour, je m'appelle Bob
-    OUTPUT:French
-
-    INPUT:Können Sie mir bitte helfen?
-    OUTPUT:German
+    Return ONLY the English name of the predominant language in the user text.
+    No punctuation. No explanations.
+    Ignore numbers, URLs, emojis, and code when deciding.
     """
 
 
