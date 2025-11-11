@@ -9,7 +9,7 @@ client = Client(host=OLLAMA_URL)
 TRANSLATION_CONTEXT = """\
     You are a language translator.  Translate the ENTIRE input from user into english and return ONLY that
 
-    The following are examples of expected input and output.
+    The following are examples of expected input and output. Do not return the examples.
 
     Examples:
     INPUT:Bonjour, je m'appelle Bob
