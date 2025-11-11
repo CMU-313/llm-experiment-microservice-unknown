@@ -4,7 +4,7 @@ services:
   ollama:
     image: ollama/ollama:latest
     environment:
-      - OLLAMA_HOST=localhost:11434
+      - OLLAMA_HOST=0.0.0.0:11434
     volumes:
       - ollama_models:/root/.ollama
     ports:
