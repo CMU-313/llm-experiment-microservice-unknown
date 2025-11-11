@@ -63,7 +63,8 @@ def get_language(post: str) -> str:
                 "role": "user",
                 "content": post
             }
-        ]
+        ],
+        options={"temperature": 0.0, "top_p": 1.0, "num_predict": 8}
     )
     return response.message.content
 
@@ -82,6 +83,5 @@ def get_translation(post: str) -> str:
                 "content": post
             }
         ],
-        options={"temperature": 0.0, "top_p": 1.0, "num_predict": 8}
     )
     return response.message.content
