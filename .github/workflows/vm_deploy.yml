@@ -28,11 +28,49 @@ jobs:
           username: ${{ secrets.SERVER_ADMIN }}
           password: ${{ secrets.ADMIN_PASSWORD }}
           script: | 
-            cd ${{ secrets.REPO_NAME }}
-            git pull origin acee3/implementing-model-translation
-            docker compose down
-            curl -fsSL https://ollama.com/install.sh | sh
-            nohup ollama serve -a 0.0.0.0:11434 > /var/log/ollama.log 2>&1 & disown
-            curl -sf http://localhost:11434/api/version || echo "Ollama not yet responding"
-            ollama pull gemma3:1b
-            docker compose up --build -d
+            set -euo pipefail
+
+            cd "$HOME/${{ secrets.REPO_NAME }}"
+
+            # Ensure we're on the expected branch
+            git fetch --all --prune
+            git checkout f25
+            git pull --ff-only
+
+            # Stop running stack (ignore if nothing up)
+            docker compose down || true
+
+            # Install Ollama (non-interactive sudo)
+            if ! command -v ollama >/dev/null 2>&1; then
+              echo "${{ secrets.ADMIN_PASSWORD }}" | sudo -S sh -c 'curl -fsSL https://ollama.com/install.sh | sh'
+            fi
+
+            # Start Ollama detached, bound to all interfaces, log to $HOME (no root needed)
+            # NOTE: prefer env var over CLI flags (portable).
+            pkill -f "ollama serve" || true
+            nohup env OLLAMA_HOST=0.0.0.0:11434 OLLAMA_KEEP_ALIVE=60s \
+              ollama serve > "$HOME/ollama.log" 2>&1 &
+
+            # Wait for API to be ready (up to ~2 minutes)
+            for i in {1..60}; do
+              if curl -fsS http://localhost:11434/api/version >/dev/null; then
+                echo "Ollama is up"
+                break
+              fi
+              sleep 2
+              if [ $i -eq 60 ]; then
+                echo "Ollama failed to start. Last 80 log lines:"
+                tail -n 80 "$HOME/ollama.log" || true
+                exit 1
+              fi
+            done
+
+            # Pull a small model (change if you need another)
+            curl -fsS -X POST http://localhost:11434/api/pull -d '{"name":"gemma3:1b"}'
+
+            # Compose warnings: silence bake/buildx and remove obsolete version key in your compose
+            export COMPOSE_DOCKER_CLI_BUILD=0
+            export DOCKER_BUILDKIT=0
+
+            # Build and run your stack in the background
+            docker compose up --build -d --remove-orphans
