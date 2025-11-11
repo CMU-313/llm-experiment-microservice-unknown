@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - f25
+  pull_request:
+    branches:
+      - f25
   workflow_dispatch:
     
 concurrency:
