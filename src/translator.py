@@ -12,22 +12,22 @@ TRANSLATION_CONTEXT = """\
     The following are examples of expected input and output.
 
     Examples:
-    INPUT: Bonjour, je m'appelle Bob
-    OUTPUT: Hello, my name is Bob.
+    INPUT:Bonjour, je m'appelle Bob
+    OUTPUT:Hello, my name is Bob.
 
-    INPUT: Können Sie mir bitte helfen?
-    OUTPUT: Can you please help me?
+    INPUT:Können Sie mir bitte helfen?
+    OUTPUT:Can you please help me?
     """
 
 CLASSIFICATION_CONTEXT = """\
     You are a language classifier. Detect the language of the given text in user's content and reply with one word ONLY the English name of that language.
 
     Example:
-    INPUT: Bonjour, je m'appelle Bob
-    OUTPUT: French
+    INPUT:Bonjour, je m'appelle Bob
+    OUTPUT:French
 
-    INPUT: Können Sie mir bitte helfen?
-    OUTPUT: German
+    INPUT:Können Sie mir bitte helfen?
+    OUTPUT:German
     """
 
 
@@ -70,8 +70,6 @@ def get_language(post: str) -> str:
             }
         ]
     )
-    if MODEL_NAME=="mistral:7b":
-      return response.message.content[1:]
     return response.message.content
 
 
@@ -90,6 +88,4 @@ def get_translation(post: str) -> str:
             }
         ]
     )
-    if MODEL_NAME=="mistral:7b":
-      return response.message.content[1:]
     return response.message.content
