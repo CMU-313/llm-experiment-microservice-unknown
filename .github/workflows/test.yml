@@ -42,7 +42,7 @@ jobs:
       - name: Run ollama
         run: |
           ollama serve &
-          ollama pull mistral:7b
+          ollama pull qwen3:0.6b
 
       - name: Run tests
         run: uv run pytest
