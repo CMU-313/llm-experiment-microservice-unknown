@@ -34,24 +34,20 @@ CLASSIFICATION_CONTEXT = """\
 
 def translate_content(content: str) -> tuple[bool, str]:
     try:
-        # no need to translate if detected as english
-        language = get_language(content) 
-        if (not (isinstance(language, str))):
-            return (False, "There was an error detecting the language of your text.")
-
-        if language.lower().strip() == "english" :
-            return (True, content)
-        
         translation = get_translation(content)
+        language = get_language(content)
+        
         # Basic checks for string output
         if (not (isinstance(translation, str))):
             return (False, "There was an error translating your text.")
+        if (not (isinstance(language, str))):
+            return (False, "There was an error detecting the language of your text.")
 
-        # is_english = False
-        # if language.lower().strip() == "english":
-        #     is_english = True
+        is_english = False
+        if language.lower().strip() == "english":
+            is_english = True
 
-        return (False, translation)
+        return (is_english, translation)
 
     except Exception as e:
         # Catch any other unexpected errors during the LLM interaction
