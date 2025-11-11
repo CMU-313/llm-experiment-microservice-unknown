@@ -31,6 +31,8 @@ def translate_content(content: str) -> tuple[bool, str]:
         translation = get_translation(content)
         language = get_language(content)
 
+        print(language)
+
         # Basic checks for string output
         if (not (isinstance(translation, str))):
             return (False, "There was an error translating your text.")
