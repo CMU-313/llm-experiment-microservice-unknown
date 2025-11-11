@@ -42,7 +42,7 @@ def translate_content(content: str) -> tuple[bool, str]:
         if language.lower() == "english":
             is_english = True
 
-        return (translation, translation)
+        return (language, translation)
 
     except Exception as e:
         # Catch any other unexpected errors during the LLM interaction
