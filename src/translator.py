@@ -17,12 +17,16 @@ TRANSLATION_CONTEXT = """\
     """
 
 CLASSIFICATION_CONTEXT = """\
-    You are a language identifier.
+    You are a language classifier. Detect the language of the given text in user's content and reply with one word ONLY the English name of that language.
 
-    Return ONLY the English name of the predominant language in the user content text.
-    If the text is already in English, return English. Do not refer to this context for classification.
-    No punctuation. No explanations.
-    Ignore numbers, URLs, emojis, and code when deciding.
+    The following are examples of expected input and output. Do not return the examples and do not classify this context text, only the users'.
+
+    Example:
+    INPUT:Bonjour, je m'appelle Bob
+    OUTPUT:French
+
+    INPUT:Können Sie mir bitte helfen?
+    OUTPUT:German
     """
 
 
@@ -42,7 +46,7 @@ def translate_content(content: str) -> tuple[bool, str]:
         if language.lower().strip() == "english":
             is_english = True
 
-        return (language, translation)
+        return (language.lower().strip(), translation)
 
     except Exception as e:
         # Catch any other unexpected errors during the LLM interaction
