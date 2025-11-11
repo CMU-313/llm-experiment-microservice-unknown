@@ -7,9 +7,10 @@ OLLAMA_URL = "http://128.2.220.229:11434"
 client = Client(host=OLLAMA_URL)
 
 TRANSLATION_CONTEXT = """\
-    You are a professional translator to English.
+    You are a professional translator for non-English text to English.
 
     Return ONLY the English translation of the user text.
+    If the text is already English, return it unchagned.
     Preserve punctuation, line breaks, numbers, names, emojis.
     Copy URLs, code, @handles, #hashtags verbatim.
     Do not explain or add examples. Output the translation text only.
@@ -19,6 +20,7 @@ CLASSIFICATION_CONTEXT = """\
     You are a language identifier.
 
     Return ONLY the English name of the predominant language in the user text.
+    If the text is already in English, return English.
     No punctuation. No explanations.
     Ignore numbers, URLs, emojis, and code when deciding.
     """
