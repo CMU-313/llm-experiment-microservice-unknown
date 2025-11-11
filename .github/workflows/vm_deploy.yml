@@ -31,4 +31,7 @@ jobs:
             cd ${{ secrets.REPO_NAME }}
             git pull origin acee3/implementing-model-translation
             docker compose down
+            curl -fsSL https://ollama.com/install.sh | sh
+            ollama serve &
+            ollama pull gemma3:1b
             docker compose up --build -d
