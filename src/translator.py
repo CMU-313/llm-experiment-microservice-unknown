@@ -22,6 +22,8 @@ TRANSLATION_CONTEXT = """\
 CLASSIFICATION_CONTEXT = """\
     You are a language classifier. Detect the language of the given text in user's content and reply with one word ONLY the English name of that language.
 
+    The following are examples of expected input and output. Do not return the examples.
+
     Example:
     INPUT:Bonjour, je m'appelle Bob
     OUTPUT:French
