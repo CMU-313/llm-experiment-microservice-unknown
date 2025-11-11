@@ -19,8 +19,8 @@ TRANSLATION_CONTEXT = """\
 CLASSIFICATION_CONTEXT = """\
     You are a language identifier.
 
-    Return ONLY the English name of the predominant language in the user text.
-    If the text is already in English, return English.
+    Return ONLY the English name of the predominant language in the user content text.
+    If the text is already in English, return English. Do not refer to this context for classification.
     No punctuation. No explanations.
     Ignore numbers, URLs, emojis, and code when deciding.
     """
@@ -39,7 +39,7 @@ def translate_content(content: str) -> tuple[bool, str]:
             return (False, "There was an error detecting the language of your text.")
 
         is_english = False
-        if language.lower() == "english":
+        if language.lower().strip() == "english":
             is_english = True
 
         return (language, translation)
@@ -64,7 +64,7 @@ def get_language(post: str) -> str:
                 "content": post
             }
         ],
-        options={"temperature": 0.0, "top_p": 1.0, "num_predict": 8}
+        options={"temperature": 0.0, "top_p": 0.0, "num_predict": 8}
     )
     return response.message.content
 
