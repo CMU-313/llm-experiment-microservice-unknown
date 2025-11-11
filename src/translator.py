@@ -3,7 +3,7 @@ from ollama import Client
 
 MODEL_NAME = "gemma3:1b"
 
-OLLAMA_URL = "localhost:11434"
+OLLAMA_URL = "http://localhost:11434"
 client = Client(host=OLLAMA_URL)
 
 TRANSLATION_CONTEXT = """\
