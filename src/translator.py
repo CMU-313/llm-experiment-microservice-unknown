@@ -1,7 +1,7 @@
 import os
 from ollama import Client
 
-MODEL_NAME = "gemma3:1b-it-qat"
+MODEL_NAME = "mistral:7b"
 
 OLLAMA_URL = "http://128.2.220.229:11434"
 client = Client(host=OLLAMA_URL)
