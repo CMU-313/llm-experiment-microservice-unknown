@@ -32,6 +32,7 @@ jobs:
             git pull origin acee3/implementing-model-translation
             docker compose down
             curl -fsSL https://ollama.com/install.sh | sh
-            ollama serve &
+            nohup ollama serve -a 0.0.0.0:11434 > /var/log/ollama.log 2>&1 & disown
+            curl -sf http://localhost:11434/api/version || echo "Ollama not yet responding"
             ollama pull gemma3:1b
             docker compose up --build -d
