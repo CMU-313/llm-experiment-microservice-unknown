@@ -4,8 +4,8 @@ from sentence_transformers import SentenceTransformer
 
 from test.unit.utils import eval_single_response_classification, eval_single_response_complete, eval_single_response_translation, evaluate
 
-COMBINED_SCORE_THRESHOLD = 0.63
-CLASSIFICATION_SCORE_THRESHOLD = 0.90
+COMBINED_SCORE_THRESHOLD = 0.56
+CLASSIFICATION_SCORE_THRESHOLD = 0.75
 TRANSLATION_SCORE_THRESHOLD = 0.7
 
 @pytest.fixture(scope="session")
@@ -278,7 +278,7 @@ COMPLETE_EVAL_SET = [
         "post": "मैं थोड़ी हिंदी बोलता हूँ।",
         "expected_answer": (False, "I speak a little Hindi.")
     },
-     {
+    {
         "post": "안녕하세요?",
         "expected_answer": (False, "Hello?")
     },

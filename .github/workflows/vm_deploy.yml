@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - f25
+  pull_request:
+    branches:
+      - f25
   workflow_dispatch:
     
 concurrency:
@@ -26,6 +29,6 @@ jobs:
           password: ${{ secrets.ADMIN_PASSWORD }}
           script: | 
             cd ${{ secrets.REPO_NAME }}
-            git pull origin main
+            git pull origin f25
             docker compose down
             docker compose up --build -d
