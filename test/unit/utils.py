@@ -9,6 +9,7 @@ def evaluate(query_fn: Callable[[Any], Any], eval_fn: Callable[[Any, Any], float
     total_score = 0
     for item in test_cases:
         llm_response = query_fn(item["post"])
+        print(f"Expected: {item['expected_answer']}, Got: {llm_response} for post: {item['post']}")
         total_score += eval_fn(item["expected_answer"], llm_response)
     return (total_score/len(test_cases))
 
