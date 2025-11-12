@@ -29,6 +29,6 @@ jobs:
           password: ${{ secrets.ADMIN_PASSWORD }}
           script: | 
             cd ${{ secrets.REPO_NAME }}
-            git pull origin acee3/implementing-model-translation
+            git pull origin f25
             docker compose down
             docker compose up --build -d
