@@ -71,7 +71,7 @@ def get_language(post: str) -> str:
         ],
         options={"temperature": 0.0, "top_p": 0.0, "num_predict": 8}
     )
-    return response.message.content
+    return response.message.content.strip()
 
 
 def get_translation(post: str) -> str:
@@ -89,4 +89,4 @@ def get_translation(post: str) -> str:
             }
         ],
     )
-    return response.message.content
+    return response.message.content.strip()
